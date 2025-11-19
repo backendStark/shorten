@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"sync"
 	"time"
 )
 
@@ -11,19 +10,13 @@ const googleURL = "https://google.com/"
 
 func main() {
 	t := time.Now()
-	var wg sync.WaitGroup
-
-	for i := range 10 {
-		wg.Add(1)
-		go doReqToGoogle(i, &wg)
-	}
-
-	wg.Wait()
-	fmt.Println(time.Since(t))
+	code := make(chan int)
+	go doReqToGoogle(code)
+	<-code
+	fmt.Println("Program has been worked", time.Since(t), "seconds")
 }
 
-func doReqToGoogle(index int, wg *sync.WaitGroup) {
-	defer wg.Done()
+func doReqToGoogle(code chan int) {
 	res, err := http.Get(googleURL)
 
 	if err != nil {
@@ -34,8 +27,10 @@ func doReqToGoogle(index int, wg *sync.WaitGroup) {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 200 && res.StatusCode < 300 {
-		fmt.Printf("%d. Response from google successful, status code: %d\n", index+1, res.StatusCode)
+		fmt.Println("succesful request, get status code:", res.StatusCode)
+		code <- res.StatusCode
+		return
 	} else {
-		fmt.Printf("%d. error get response from google, status code: %d\n", index+1, res.StatusCode)
+		return
 	}
 }
