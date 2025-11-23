@@ -1,36 +1,45 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
-	"time"
+	"os"
+	"strings"
 )
 
-const googleURL = "https://google.com/"
-
 func main() {
-	t := time.Now()
-	code := make(chan int)
-	go doReqToGoogle(code)
-	<-code
-	fmt.Println("Program has been worked", time.Since(t), "seconds")
+	path := flag.String("file", "urls.txt", "path to URL file")
+	flag.Parse()
+
+	file, err := os.ReadFile(*path)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	urlSlice := strings.Split(string(file), "\n")
+	respCh := make(chan int)
+	errCh := make(chan error)
+
+	for _, url := range urlSlice {
+		go ping(url, respCh, errCh)
+	}
+
+	for i := 0; i < len(urlSlice); i++ {
+		res := <- respCh
+		fmt.Println(res)
+		errRes := <- errCh
+		fmt.Println(errRes)
+	}
 }
 
-func doReqToGoogle(code chan int) {
-	res, err := http.Get(googleURL)
+func ping(url string, respCh chan int, errCh chan error) {
+	resp, err := http.Get(url)
 
 	if err != nil {
-		fmt.Println("error get response from google")
+		errCh <- err
 		return
 	}
 
-	defer res.Body.Close()
-
-	if res.StatusCode >= 200 && res.StatusCode < 300 {
-		fmt.Println("succesful request, get status code:", res.StatusCode)
-		code <- res.StatusCode
-		return
-	} else {
-		return
-	}
+	respCh <- resp.StatusCode
 }
