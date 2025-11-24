@@ -9,9 +9,16 @@ const serverPortNumber = "8081"
 const serverPort = ":" + serverPortNumber
 
 func main() {
+	router := http.NewServeMux()
+	router.HandleFunc("/hello", helloHandler)
+
+	server := http.Server{
+		Addr:    serverPort,
+		Handler: router,
+	}
+
 	fmt.Println("Server start and listening port:", serverPortNumber)
-	http.HandleFunc("/hello", helloHandler)
-	http.ListenAndServe(serverPort, nil)
+	server.ListenAndServe()
 }
 
 func helloHandler(w http.ResponseWriter, req *http.Request) {
