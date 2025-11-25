@@ -10,7 +10,7 @@ const serverPort = ":" + serverPortNumber
 
 func main() {
 	router := http.NewServeMux()
-	router.HandleFunc("/hello", helloHandler)
+	NewHelloHandler(router)
 
 	server := http.Server{
 		Addr:    serverPort,
@@ -19,8 +19,4 @@ func main() {
 
 	fmt.Println("Server start and listening port:", serverPortNumber)
 	server.ListenAndServe()
-}
-
-func helloHandler(w http.ResponseWriter, req *http.Request) {
-	fmt.Println("hello")
 }
