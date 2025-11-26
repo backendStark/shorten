@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"shorten/internal/hello"
 )
 
 const serverPortNumber = "8081"
@@ -10,7 +11,7 @@ const serverPort = ":" + serverPortNumber
 
 func main() {
 	router := http.NewServeMux()
-	NewHelloHandler(router)
+	hello.NewHelloHandler(router)
 
 	server := http.Server{
 		Addr:    serverPort,
