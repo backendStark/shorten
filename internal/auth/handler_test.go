@@ -8,7 +8,7 @@ import (
 
 func TestLogin(t *testing.T) {
 	handler := &AuthHandler{}
-	req := httptest.NewRequest(http.MethodGet, "/auth/login", nil)
+	req := httptest.NewRequest(http.MethodPost, "/auth/login", nil)
 	w := httptest.NewRecorder()
 
 	handler.Login().ServeHTTP(w, req)
@@ -20,7 +20,7 @@ func TestLogin(t *testing.T) {
 
 func TestRegister(t *testing.T) {
 	handler := &AuthHandler{}
-	req := httptest.NewRequest(http.MethodGet, "/auth/register", nil)
+	req := httptest.NewRequest(http.MethodPost, "/auth/register", nil)
 	w := httptest.NewRecorder()
 
 	handler.Register().ServeHTTP(w, req)
@@ -42,7 +42,7 @@ func TestNewAuthHandler(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		req := httptest.NewRequest(http.MethodGet, tt.path, nil)
+		req := httptest.NewRequest(http.MethodPost, tt.path, nil)
 		w := httptest.NewRecorder()
 
 		// mux.ServeHTTP will route the request to the registered handler
