@@ -3,17 +3,16 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"shorten/configs"
-	"shorten/internal/hello"
+	"shorten/internal/auth"
 )
 
 const serverPortNumber = "8081"
 const serverPort = ":" + serverPortNumber
 
 func main() {
-	conf := configs.LoadConfig()
+	// conf := configs.LoadConfig()
 	router := http.NewServeMux()
-	hello.NewHelloHandler(router)
+	auth.NewAuthHandler(router)
 
 	server := http.Server{
 		Addr:    serverPort,
