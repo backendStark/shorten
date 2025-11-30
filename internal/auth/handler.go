@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"shorten/configs"
@@ -26,6 +27,14 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(handler.Config.Auth.Token)
 		fmt.Println("You send GET response to /auth/login route")
+
+		res := LoginResponse{
+			Token: "123",
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(res)
 	}
 }
 
