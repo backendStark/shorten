@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"shorten/configs"
+	"shorten/pkg/res"
 )
 
 type AuthHandlerDeps struct {
@@ -28,13 +29,20 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		fmt.Println(handler.Config.Auth.Token)
 		fmt.Println("You send GET response to /auth/login route")
 
-		res := LoginResponse{
+		var payload LoginRequest
+		err := json.NewDecoder(r.Body).Decode(&payload)
+
+		if err != nil {
+			res.JSON(w, 402, err.Error())
+		}
+
+		fmt.Println(payload)
+
+		resp := LoginResponse{
 			Token: "123",
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(200)
-		json.NewEncoder(w).Encode(res)
+		res.JSON(w, 200, resp)
 	}
 }
 

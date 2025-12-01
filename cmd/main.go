@@ -23,5 +23,7 @@ func main() {
 	}
 
 	fmt.Println("Server start and listening port:", serverPortNumber)
-	server.ListenAndServe()
+	if err := server.ListenAndServe(); err != nil {
+		panic(err)
+	}
 }
