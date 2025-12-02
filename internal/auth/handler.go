@@ -36,7 +36,12 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 			res.JSON(w, 402, err.Error())
 		}
 
-		fmt.Println(payload)
+		if err := validatePayload(payload); err != nil {
+			res.JSON(w, 400, err.Error())
+			return
+		}
+
+		// fmt.Println(payload)
 
 		resp := LoginResponse{
 			Token: "123",
@@ -50,4 +55,11 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("You send GET response to /auth/register route")
 	}
+}
+
+func validatePayload(payload LoginRequest) error {
+	if payload.Login == "" || payload.Password == "" {
+		return fmt.Errorf("Payload is not valid")
+	}
+	return nil
 }
