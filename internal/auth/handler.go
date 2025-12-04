@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/mail"
 	"shorten/configs"
 	"shorten/pkg/res"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type AuthHandlerDeps struct {
@@ -59,14 +60,13 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 }
 
 func validatePayload(payload LoginRequest) error {
-	_, err := mail.ParseAddress(payload.Email)
+	validate := validator.New()
+
+	err := validate.Struct(payload)
 
 	if err != nil {
-		return fmt.Errorf("Email is not valid")
+		return err
 	}
 
-	if payload.Password == "" {
-		return fmt.Errorf("Password is not valid")
-	}
 	return nil
 }
