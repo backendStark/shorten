@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/mail"
 	"shorten/configs"
 	"shorten/pkg/res"
 )
@@ -58,8 +59,14 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 }
 
 func validatePayload(payload LoginRequest) error {
-	if payload.Login == "" || payload.Password == "" {
-		return fmt.Errorf("Payload is not valid")
+	_, err := mail.ParseAddress(payload.Email)
+
+	if err != nil {
+		return fmt.Errorf("Email is not valid")
+	}
+
+	if payload.Password == "" {
+		return fmt.Errorf("Password is not valid")
 	}
 	return nil
 }
