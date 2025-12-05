@@ -7,7 +7,6 @@ import (
 	"shorten/configs"
 	"shorten/pkg/res"
 
-	"github.com/go-playground/validator/v10"
 )
 
 type AuthHandlerDeps struct {
@@ -31,17 +30,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		fmt.Println(handler.Config.Auth.Token)
 		fmt.Println("You send GET response to /auth/login route")
 
-		var payload LoginRequest
-		err := json.NewDecoder(r.Body).Decode(&payload)
 
-		if err != nil {
-			res.JSON(w, 402, err.Error())
-		}
-
-		if err := validatePayload(payload); err != nil {
-			res.JSON(w, 400, err.Error())
-			return
-		}
 
 		// fmt.Println(payload)
 
@@ -59,14 +48,3 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 	}
 }
 
-func validatePayload(payload LoginRequest) error {
-	validate := validator.New()
-
-	err := validate.Struct(payload)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
