@@ -1,12 +1,11 @@
 package auth
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"shorten/configs"
+	"shorten/pkg/req"
 	"shorten/pkg/res"
-
 )
 
 type AuthHandlerDeps struct {
@@ -27,15 +26,15 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 
 func (handler *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(handler.Config.Auth.Token)
-		fmt.Println("You send GET response to /auth/login route")
+		body, err := req.HandleBody[LoginRequest](&w, r)
+		if err != nil {
+			return
+		}
 
-
-
-		// fmt.Println(payload)
+		fmt.Println(body)
 
 		resp := LoginResponse{
-			Token: "123",
+			Token: "LoginToken",
 		}
 
 		res.JSON(w, 200, resp)
@@ -44,7 +43,17 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 
 func (handler *AuthHandler) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("You send GET response to /auth/register route")
+		body, err := req.HandleBody[RegisterRequest](&w, r)
+		if err != nil {
+			return
+		}
+
+		fmt.Println(body)
+
+		resp := RegisterResponse{
+			Token: "RegisterToken",
+		}
+
+		res.JSON(w, 200, resp)
 	}
 }
-
