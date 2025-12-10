@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"shorten/configs"
 	"shorten/internal/auth"
+	"shorten/internal/link"
 )
 
 const serverPortNumber = "8081"
@@ -13,9 +14,12 @@ const serverPort = ":" + serverPortNumber
 func main() {
 	conf := configs.LoadConfig()
 	router := http.NewServeMux()
+
+	// Handlers
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
 		Config: conf,
 	})
+	link.NewLinkHandler(router, link.LinkHandlerDeps{})
 
 	server := http.Server{
 		Addr:    serverPort,
