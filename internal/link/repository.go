@@ -8,8 +8,13 @@ type LinkRepository struct {
 
 func NewLinkRepository(db *db.Db) *LinkRepository {
 	return &LinkRepository{db}
-}	
+}
 
-func (repo *LinkRepository) Create(link *Link) error {
-	return repo.Database.Create(link).Error
+func (repo *LinkRepository) Create(link *Link) (*Link, error) {
+	result := repo.Database.DB.Create(link)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return link, nil
 }
