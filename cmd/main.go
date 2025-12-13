@@ -6,6 +6,7 @@ import (
 	"shorten/configs"
 	"shorten/internal/auth"
 	"shorten/internal/link"
+	"shorten/pkg/db"
 )
 
 const serverPortNumber = "8081"
@@ -13,13 +14,19 @@ const serverPort = ":" + serverPortNumber
 
 func main() {
 	conf := configs.LoadConfig()
+	db := db.NewDb(conf)
 	router := http.NewServeMux()
+
+	// Repositories
+	linkRepository := link.NewLinkRepository(db)
 
 	// Handlers
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
 		Config: conf,
 	})
-	link.NewLinkHandler(router, link.LinkHandlerDeps{})
+	link.NewLinkHandler(router, link.LinkHandlerDeps{
+		LinkRepository: linkRepository,
+	})
 
 	server := http.Server{
 		Addr:    serverPort,
