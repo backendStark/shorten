@@ -7,6 +7,7 @@ import (
 	"shorten/internal/auth"
 	"shorten/internal/link"
 	"shorten/pkg/db"
+	"shorten/pkg/middleware"
 )
 
 const serverPortNumber = "8081"
@@ -30,7 +31,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    serverPort,
-		Handler: router,
+		Handler: middleware.Logging(router),
 	}
 
 	fmt.Println("Server start and listening port:", serverPortNumber)
