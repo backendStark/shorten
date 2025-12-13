@@ -1,11 +1,12 @@
 package link
 
 import (
+	"fmt"
 	"net/http"
 	"shorten/configs"
 )
 
-type LinkHandlerDeps struct {}
+type LinkHandlerDeps struct{}
 
 type LinkHandler struct {
 	*configs.Config
@@ -16,7 +17,7 @@ func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
 
 	router.HandleFunc("POST /link", handler.Create())
 	router.HandleFunc("PATCH /link/{id}", handler.Update())
-	router.HandleFunc("POST /link/{id}", handler.Delete())
+	router.HandleFunc("DELETE /link/{id}", handler.Delete())
 	router.HandleFunc("GET /{hash}", handler.GoTo())
 }
 
@@ -37,6 +38,7 @@ func (handler *LinkHandler) Update() http.HandlerFunc {
 }
 func (handler *LinkHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		id := r.PathValue("id")
+		fmt.Println(id)
 	}
 }
