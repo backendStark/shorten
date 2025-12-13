@@ -31,7 +31,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    serverPort,
-		Handler: middleware.Logging(router),
+		Handler: middleware.CORS(middleware.Logging(router)),
 	}
 
 	fmt.Println("Server start and listening port:", serverPortNumber)
