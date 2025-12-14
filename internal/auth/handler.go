@@ -51,6 +51,16 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 
-		handler.AuthService.Register(body.Email, body.Password, body.Name)
+		_, err = handler.AuthService.Register(body.Email, body.Password, body.Name)
+		if err != nil {
+			res.JSON(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		resp := RegisterResponse{
+			Token: "RegisterToken",
+		}
+
+		res.JSON(w, http.StatusOK, resp)
 	}
 }
