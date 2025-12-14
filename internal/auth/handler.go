@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"shorten/configs"
+	"shorten/pkg/jwt"
 	"shorten/pkg/req"
 	"shorten/pkg/res"
 )
@@ -35,16 +35,18 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		}
 
 		email, err := handler.AuthService.Login(body.Email, body.Password)
-
-		fmt.Println(email)
-
 		if err != nil {
 			res.JSON(w, http.StatusUnauthorized, err.Error())
 			return
 		}
+		token, err := jwt.NewJWT(handler.Config.Auth.Secret).Create(email)
+		if err != nil {
+			res.JSON(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		resp := LoginResponse{
-			Token: "LoginToken",
+			Token: token,
 		}
 
 		res.JSON(w, 200, resp)
@@ -58,14 +60,21 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 
-		_, err = handler.AuthService.Register(body.Email, body.Password, body.Name)
+		email, err := handler.AuthService.Register(body.Email, body.Password, body.Name)
+
 		if err != nil {
 			res.JSON(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
+		token, err := jwt.NewJWT(handler.Config.Auth.Secret).Create(email)
+		if err != nil {
+			res.JSON(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		resp := RegisterResponse{
-			Token: "RegisterToken",
+			Token: token,
 		}
 
 		res.JSON(w, http.StatusOK, resp)
