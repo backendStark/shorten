@@ -20,7 +20,7 @@ type AuthHandler struct {
 
 func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 	handler := &AuthHandler{
-		Config: deps.Config,
+		Config:      deps.Config,
 		AuthService: deps.AuthService,
 	}
 	router.HandleFunc("POST /auth/login", handler.Login())
@@ -34,7 +34,14 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 			return
 		}
 
-		fmt.Println(body)
+		email, err := handler.AuthService.Login(body.Email, body.Password)
+
+		fmt.Println(email)
+
+		if err != nil {
+			res.JSON(w, http.StatusUnauthorized, err.Error())
+			return
+		}
 
 		resp := LoginResponse{
 			Token: "LoginToken",
