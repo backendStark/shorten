@@ -39,7 +39,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 			res.JSON(w, http.StatusUnauthorized, err.Error())
 			return
 		}
-		token, err := jwt.NewJWT(handler.Config.Auth.Secret).Create(email)
+		token, err := jwt.NewJWT(handler.Config.Auth.Secret).Create(jwt.JWTData{Email: email})
 		if err != nil {
 			res.JSON(w, http.StatusInternalServerError, err.Error())
 			return
@@ -67,7 +67,7 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 
-		token, err := jwt.NewJWT(handler.Config.Auth.Secret).Create(email)
+		token, err := jwt.NewJWT(handler.Config.Auth.Secret).Create(jwt.JWTData{Email: email})
 		if err != nil {
 			res.JSON(w, http.StatusInternalServerError, err.Error())
 			return
