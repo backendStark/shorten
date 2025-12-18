@@ -1,0 +1,29 @@
+package stat
+
+import (
+	"shorten/pkg/db"
+	"time"
+
+	"gorm.io/datatypes"
+)
+
+type StatRepository struct {
+	*db.Db
+}
+
+func NewStatRepository(db *db.Db) *StatRepository {
+	return &StatRepository{db}
+}
+
+func (repo *StatRepository) AddClick(linkId uint) {
+	var stat Stat
+	currentDate := datatypes.Date(time.Now())
+	repo.Db.Find(&stat, "link_id = ? AND date = ?", linkId, "CURRENT_DATE", linkId, currentDate)
+
+	if stat.ID == 0 {
+		repo.Db.Create(&Stat{LinkId: linkId, Date: currentDate, Clicks: 1})
+	} else {
+		stat.Clicks++
+		repo.Db.Save(&stat)
+	}
+}
