@@ -3,6 +3,7 @@ package link
 import (
 	"net/http"
 	"shorten/configs"
+	"shorten/internal/stat"
 	"shorten/pkg/middleware"
 	"shorten/pkg/req"
 	"shorten/pkg/res"
@@ -13,16 +14,19 @@ import (
 
 type LinkHandlerDeps struct {
 	LinkRepository *LinkRepository
+	StatRepository *stat.StatRepository
 	Config         *configs.Config
 }
 
 type LinkHandler struct {
 	LinkRepository *LinkRepository
+	StatRepository *stat.StatRepository
 }
 
 func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
 	handler := &LinkHandler{
 		LinkRepository: deps.LinkRepository,
+		StatRepository: deps.StatRepository,
 	}
 
 	router.HandleFunc("POST /link", handler.Create())
@@ -40,6 +44,7 @@ func (handler *LinkHandler) GoTo() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
+		handler.StatRepository.AddClick(link.ID)
 		http.Redirect(w, r, link.Url, http.StatusTemporaryRedirect)
 	}
 }
