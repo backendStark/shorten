@@ -3,7 +3,7 @@ package link
 import (
 	"net/http"
 	"shorten/configs"
-	"shorten/internal/stat"
+	"shorten/pkg/di"
 	"shorten/pkg/middleware"
 	"shorten/pkg/req"
 	"shorten/pkg/res"
@@ -14,13 +14,13 @@ import (
 
 type LinkHandlerDeps struct {
 	LinkRepository *LinkRepository
-	StatRepository *stat.StatRepository
+	StatRepository di.IStatRepository
 	Config         *configs.Config
 }
 
 type LinkHandler struct {
 	LinkRepository *LinkRepository
-	StatRepository *stat.StatRepository
+	StatRepository di.IStatRepository
 }
 
 func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
