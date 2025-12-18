@@ -65,7 +65,14 @@ func (repo *LinkRepository) Count() int64 {
 
 func (repo *LinkRepository) GetAll(limit, offset uint) []Link {
 	var links []Link
-	repo.Database.DB.Table("links").Where("deleted_at is null").Order("id asc").Limit(int(limit)).Offset(int(offset)).Scan(&links)
+
+	repo.Database.DB.
+		Table("links").
+		Where("deleted_at is null").
+		Order("id asc").
+		Limit(int(limit)).
+		Offset(int(offset)).
+		Scan(&links)
 
 	return links
 }
