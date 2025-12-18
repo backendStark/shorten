@@ -16,7 +16,7 @@ import (
 const serverPortNumber = "8081"
 const serverPort = ":" + serverPortNumber
 
-func main() {
+func App() http.Handler {
 	conf := configs.LoadConfig()
 	db := db.NewDb(conf)
 	router := http.NewServeMux()
@@ -50,18 +50,24 @@ func main() {
 		Config:         conf,
 	})
 
+	go statService.AddClick()
+
 	// Middlewares
 	stack := middleware.Chain(
 		middleware.CORS,
 		middleware.Logging,
 	)
 
+	return stack(router)
+}
+
+func main() {
+	app := App()
+
 	server := http.Server{
 		Addr:    serverPort,
-		Handler: stack(router),
+		Handler: app,
 	}
-
-	go statService.AddClick()
 
 	fmt.Println("Server start and listening port:", serverPortNumber)
 	if err := server.ListenAndServe(); err != nil {
